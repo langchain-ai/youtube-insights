@@ -2,3 +2,4 @@ streamlit>=1.26.0
 langchain
 openai
 youtube-transcript-api
+tiktoken
