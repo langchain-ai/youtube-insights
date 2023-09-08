@@ -66,11 +66,11 @@ st.title('🦜🔗 YouTube Insights')
 openai_api_key = st.sidebar.text_input('OpenAI API Key')
 temperature = st.sidebar.number_input("Model temperature", value=0.7)
 num_insights = st.sidebar.number_input("Number of insights", value=5)
-map_prompt_template = st.sidebar.text_input(
+map_prompt_template = st.sidebar.text_area(
     'Per-chunk prompt',
     value=DEFAULT_MAP_PROMPT
 )
-reduce_prompt_template = st.sidebar.text_input(
+reduce_prompt_template = st.sidebar.text_area(
     'Combine prompt',
     value=DEFAULT_REDUCE_PROMPT
 )
