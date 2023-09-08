@@ -1,3 +1,4 @@
+from langchain import hub
 from langchain.chains import (
     StuffDocumentsChain,
     LLMChain,
@@ -11,15 +12,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 import streamlit as st
 
 
-DEFAULT_MAP_PROMPT = """Summarize the key insights in the following discussion:
-
-{context}"""
-
-DEFAULT_REDUCE_PROMPT = """You are given summaries of a long discussion. \
-Extract from the summaries a numbered list of the top {num_insights} most important \
-insights. Each insight should be a single complete sentence:
-
-{context}"""
+HUB_API_URL = "https://api.hub.langchain.com"
+HUB_MAP_PROMPT_REPO = ""
+HUB_REDUCE_PROMPT_REPO = ""
 
 
 def _get_docs(url):
@@ -50,42 +45,45 @@ def _construct_chain(llm, map_prompt_template, reduce_prompt_template):
 def _generate_insights(
     url,
     openai_api_key,
+    map_prompt_template,
+    reduce_prompt_template,
     *,
     temperature=0.7,
     num_insights=5,
-    map_prompt_template=DEFAULT_MAP_PROMPT,
-    reduce_prompt_template=DEFAULT_REDUCE_PROMPT
 ):
     docs = _get_docs(url)
     llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=temperature)
     chain = _construct_chain(llm, map_prompt_template, reduce_prompt_template)
     st.info(chain.run(input_documents=docs, num_insights=num_insights))
 
+
 st.title('🦜🔗 YouTube Insights')
 
 openai_api_key = st.sidebar.text_input('OpenAI API Key')
+lc_hub_api_key = st.sidebar.text_input('LangChainHub API Key')
 temperature = st.sidebar.number_input("Model temperature", value=0.7)
 num_insights = st.sidebar.number_input("Number of insights", value=5)
-map_prompt_template = st.sidebar.text_area(
-    'Per-chunk prompt',
-    value=DEFAULT_MAP_PROMPT
-)
-reduce_prompt_template = st.sidebar.text_area(
-    'Combine prompt',
-    value=DEFAULT_REDUCE_PROMPT
-)
-
 with st.form('my_form'):
   url = st.text_area('Enter a YouTube URL:', 'https://youtu.be/ESQkoA8Wx1U')
   submitted = st.form_submit_button('Submit')
   if not openai_api_key.startswith('sk-'):
       st.warning('Please enter your OpenAI API key!', icon='⚠')
-  if submitted and openai_api_key.startswith('sk-'):
+  if not lc_hub_api_key:
+      st.warning('Please enter your LangChainHub API key!', icon='⚠')
+  if submitted and openai_api_key.startswith('sk-') and lc_hub_api_key:
+      map_prompt_template = hub.pull(
+          HUB_MAP_PROMPT_REPO, api_url=HUB_API_URL, api_key=lc_hub_api_key
+      )
+      st.info(f"Using map prompt: {map_prompt_template.template}")
+      reduce_prompt_template = hub.pull(
+          HUB_REDUCE_PROMPT_REPO, api_url=HUB_API_URL, api_key=lc_hub_api_key
+      )
+      st.info(f"Using reduce prompt: {reduce_prompt_template.template}")
       _generate_insights(
           url,
           openai_api_key,
+          map_prompt_template,
+          reduce_prompt_template,
           temperature=temperature,
           num_insights=num_insights,
-          map_prompt_template=map_prompt_template,
-          reduce_prompt_template=reduce_prompt_template
       )
