@@ -24,10 +24,8 @@ def _get_docs(url):
 
 def _construct_chain(llm, map_prompt_template, reduce_prompt_template):
     document_prompt = PromptTemplate.from_template("{page_content}")
-    map_prompt = PromptTemplate.from_template(map_prompt_template)
-    map_chain = LLMChain(llm=llm, prompt=map_prompt)
-    reduce_prompt = PromptTemplate.from_template(reduce_prompt_template)
-    reduce_chain = LLMChain(llm=llm, prompt=reduce_prompt)
+    map_chain = LLMChain(llm=llm, prompt=map_prompt_template)
+    reduce_chain = LLMChain(llm=llm, prompt=reduce_prompt_template)
     combine_documents_chain = StuffDocumentsChain(
         llm_chain=reduce_chain,
         document_prompt=document_prompt,
@@ -74,11 +72,11 @@ with st.form('my_form'):
       map_prompt_template = hub.pull(
           HUB_MAP_PROMPT_REPO, api_url=HUB_API_URL, api_key=lc_hub_api_key
       )
-      st.info(f"Using map prompt: {map_prompt_template.template}")
+      st.info(f"Using map prompt:\n\n{map_prompt_template.template}")
       reduce_prompt_template = hub.pull(
           HUB_REDUCE_PROMPT_REPO, api_url=HUB_API_URL, api_key=lc_hub_api_key
       )
-      st.info(f"Using reduce prompt: {reduce_prompt_template.template}")
+      st.info(f"Using reduce prompt:\n\n{reduce_prompt_template.template}")
       _generate_insights(
           url,
           openai_api_key,
