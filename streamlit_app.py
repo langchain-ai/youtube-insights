@@ -13,8 +13,8 @@ import streamlit as st
 
 
 HUB_API_URL = "https://api.hub.langchain.com"
-HUB_MAP_PROMPT_REPO = ""
-HUB_REDUCE_PROMPT_REPO = ""
+HUB_MAP_PROMPT_REPO = "brie/youtube-insights-map"
+HUB_REDUCE_PROMPT_REPO = "brie/youtube-insights-reduce"
 
 
 def _get_docs(url):
