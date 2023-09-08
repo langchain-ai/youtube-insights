@@ -3,3 +3,4 @@ langchain
 openai
 youtube-transcript-api
 tiktoken
+langchainhub
