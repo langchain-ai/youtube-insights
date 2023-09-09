@@ -42,7 +42,6 @@ def _construct_chain(llm, map_prompt_template, reduce_prompt_template):
 
 def _generate_insights(
     url,
-    openai_api_key,
     map_prompt_template,
     reduce_prompt_template,
     *,
@@ -50,36 +49,29 @@ def _generate_insights(
     num_insights=5,
 ):
     docs = _get_docs(url)
-    llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=temperature)
+    llm = ChatOpenAI(temperature=temperature)
     chain = _construct_chain(llm, map_prompt_template, reduce_prompt_template)
     st.info(chain.run(input_documents=docs, num_insights=num_insights))
 
 
 st.title('🦜🔗 YouTube Insights')
 
-openai_api_key = st.sidebar.text_input('OpenAI API Key')
-lc_hub_api_key = st.sidebar.text_input('LangChainHub API Key')
 temperature = st.sidebar.number_input("Model temperature", value=0.7)
 num_insights = st.sidebar.number_input("Number of insights", value=5)
 with st.form('my_form'):
   url = st.text_area('Enter a YouTube URL:', 'https://youtu.be/ESQkoA8Wx1U')
   submitted = st.form_submit_button('Submit')
-  if not openai_api_key.startswith('sk-'):
-      st.warning('Please enter your OpenAI API key!', icon='⚠')
-  if not lc_hub_api_key:
-      st.warning('Please enter your LangChainHub API key!', icon='⚠')
-  if submitted and openai_api_key.startswith('sk-') and lc_hub_api_key:
+  if submitted:
       map_prompt_template = hub.pull(
-          HUB_MAP_PROMPT_REPO, api_url=HUB_API_URL, api_key=lc_hub_api_key
+          HUB_MAP_PROMPT_REPO, api_url=HUB_API_URL
       )
       st.info(f"Using map prompt:\n\n{map_prompt_template.template}")
       reduce_prompt_template = hub.pull(
-          HUB_REDUCE_PROMPT_REPO, api_url=HUB_API_URL, api_key=lc_hub_api_key
+          HUB_REDUCE_PROMPT_REPO, api_url=HUB_API_URL
       )
       st.info(f"Using reduce prompt:\n\n{reduce_prompt_template.template}")
       _generate_insights(
           url,
-          openai_api_key,
           map_prompt_template,
           reduce_prompt_template,
           temperature=temperature,
