@@ -63,9 +63,6 @@ num_insights = st.sidebar.number_input("Number of insights", value=5)
 with st.form('my_form'):
   url = st.text_area('Enter a YouTube URL:', 'https://youtu.be/ESQkoA8Wx1U')
   submitted = st.form_submit_button('Submit')
-  os.environ
-  if os.environ["LANGCHAIN_TRACING_V2"] != "true":
-      raise ValueError
   if submitted:
       map_prompt_template = hub.pull(
           HUB_MAP_PROMPT_REPO, api_url=HUB_API_URL
