@@ -1,3 +1,5 @@
+import os
+
 from langchain import hub
 from langchain.chains import (
     StuffDocumentsChain,
@@ -59,6 +61,8 @@ st.title('🦜🔗 YouTube Insights')
 temperature = st.sidebar.number_input("Model temperature", value=0.7)
 num_insights = st.sidebar.number_input("Number of insights", value=5)
 with st.form('my_form'):
+  if os.environ["LANGCHAIN_TRACING_V2"] != "true":
+      raise ValueError
   url = st.text_area('Enter a YouTube URL:', 'https://youtu.be/ESQkoA8Wx1U')
   submitted = st.form_submit_button('Submit')
   if submitted:
