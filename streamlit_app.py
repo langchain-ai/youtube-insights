@@ -61,7 +61,7 @@ def _generate_insights(
         run_id = cb.traced_runs[0].id
         run_url = client.read_run(run_id).url
         st.info(f"Trace URL: {run_url}")
-        st.info(result["output_text"])
+        st.write(result["output_text"])
 
 
 st.title('🦜🔗 YouTube Insights')
