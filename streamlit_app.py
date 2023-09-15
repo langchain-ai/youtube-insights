@@ -64,6 +64,7 @@ with st.form('my_form'):
   url = st.text_area('Enter a YouTube URL:', 'https://youtu.be/ESQkoA8Wx1U')
   submitted = st.form_submit_button('Submit')
   if submitted:
+      print(os.environ)
       map_prompt_template = hub.pull(
           HUB_MAP_PROMPT_REPO, api_url=HUB_API_URL
       )
