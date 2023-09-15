@@ -1,6 +1,6 @@
 import os
 
-from langchain import hub
+from langchain import callbacks, hub
 from langchain.chains import (
     StuffDocumentsChain,
     LLMChain,
@@ -11,6 +11,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import YoutubeLoader
 from langchain.prompts import PromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langsmith import Client
 import streamlit as st
 
 
@@ -54,7 +55,13 @@ def _generate_insights(
     docs = _get_docs(url)
     llm = ChatOpenAI(temperature=temperature)
     chain = _construct_chain(llm, map_prompt_template, reduce_prompt_template)
-    st.info(chain.run(input_documents=docs, num_insights=num_insights))
+    client = Client()
+    with callbacks.collect_runs() as cb:
+        result = chain.invoke(dict(input_documents=docs, num_insights=num_insights))
+        run_id = cb.traced_runs[0].id
+        run_url = client.read_run(run_id).url
+        st.info(f"Trace URL: {run_url}")
+        st.info(result["output_text"])
 
 
 st.title('🦜🔗 YouTube Insights')
