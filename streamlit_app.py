@@ -14,6 +14,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 import streamlit as st
 
 
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
 HUB_API_URL = "https://api.hub.langchain.com"
 HUB_MAP_PROMPT_REPO = "brie/youtube-insights-map"
 HUB_REDUCE_PROMPT_REPO = "brie/youtube-insights-reduce"
@@ -64,7 +65,6 @@ with st.form('my_form'):
   url = st.text_area('Enter a YouTube URL:', 'https://youtu.be/ESQkoA8Wx1U')
   submitted = st.form_submit_button('Submit')
   if submitted:
-      st.info(dict(os.environ))
       map_prompt_template = hub.pull(
           HUB_MAP_PROMPT_REPO, api_url=HUB_API_URL
       )
